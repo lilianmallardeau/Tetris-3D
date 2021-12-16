@@ -12,13 +12,41 @@ uniform vec3 u_activeBlockBorderColor = vec3(1.0f, 1.0f, 1.0f);
 uniform sampler2D u_texture;
 uniform bool u_drawActiveBlock = false;
 
-float threshold = 0.02f;
+// Phong
+uniform vec3 u_lightPosition;
+uniform vec3 u_cameraPosition;
+uniform vec3 u_lightColor = vec3(1.0f, 1.0f, 1.0f);
+uniform float u_ambiantIntensity = 0.3f;
+uniform float u_diffuseIntensity = 0.9f;
+uniform float u_specularIntensity = 0.5f;
+uniform float alpha = 32;
 
-bool isBorder(vec2 texCoord, float threshold) {
-    return texCoord.s <= threshold || texCoord.s >= 1.0f-threshold || texCoord.t <= threshold || texCoord.t >= 1.0f-threshold;
+float borderThreshold = 0.02f;
+
+bool isBorder(vec2 texCoord, float borderThreshold) {
+    return texCoord.s <= borderThreshold || texCoord.s >= 1.0f-borderThreshold || texCoord.t <= borderThreshold || texCoord.t >= 1.0f-borderThreshold;
 }
 bool isBorder(vec2 texCoord) {
-    return isBorder(texCoord, threshold);
+    return isBorder(texCoord, borderThreshold);
+}
+
+vec3 phong() {
+    vec3 ambiant, diffuse, specular;
+    vec3 lightDirection = normalize(u_lightPosition - v_position);
+    vec3 cameraDirection = normalize(u_cameraPosition - v_position);
+
+    // Ambiant lighting
+    ambiant = vec3(u_ambiantIntensity) * u_lightColor;
+
+    // Diffuse lighting
+    diffuse = u_diffuseIntensity * max(dot(v_normal, lightDirection), 0.0f) * u_lightColor;
+
+    // Specular lighting
+    vec3 reflected_ray = reflect(-lightDirection, v_normal);
+    specular = u_specularIntensity * pow(max(dot(cameraDirection, reflected_ray), 0.0f), alpha) * u_lightColor;
+
+    vec3 phong = ambiant + diffuse + specular;
+    return phong;
 }
 
 void main() {
@@ -35,4 +63,5 @@ void main() {
             color = vec4(1.0f, 1.0f, 1.0f, 0.5f);
         }
     }
+    color = vec4(phong() * color.rgb, color.a);
 }

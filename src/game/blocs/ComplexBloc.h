@@ -11,7 +11,7 @@
 #include "BasicBloc.h"
 
 class ComplexBloc : public Bloc {
-    private:
+    protected:
         std::vector<BasicBloc> blocs;
 
     public:

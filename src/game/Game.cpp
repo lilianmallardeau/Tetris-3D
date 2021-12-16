@@ -3,6 +3,9 @@
 //
 
 #include "Game.h"
+#include "blocs/LBloc.h"
+#include "blocs/ZBloc.h"
+#include "blocs/TBloc.h"
 
 #include <algorithm>
 #include <iostream>
@@ -12,7 +15,7 @@
 
 
 Game::Game() : grid(NavigationGrid(ROWS, COLUMNS, DEPTH)), activeBloc(newRandomBloc()) {
-    glm::vec3 cameraPosition(COLUMNS/2.0f, -6.5f, ROWS/2.0f);
+    cameraPosition = glm::vec3(COLUMNS/2.0f, -6.5f, ROWS/2.0f);
     viewMatrix = glm::lookAt(
             cameraPosition,
             cameraPosition + glm::vec3(0.0f, 1.0f, 0.0f),
@@ -67,6 +70,13 @@ bool Game::init() {
     blocShader->setUniform<int>("u_texture", {1});
 
     wallsShader->setUniform<float>("u_color", {WALLS_COLOR});
+
+    // Phong
+    blocShader->setUniform<float>("u_lightPosition", &lightPosition, 1);
+    wallsShader->setUniform<float>("u_lightPosition", &lightPosition, 1);
+    blocShader->setUniform<float>("u_cameraPosition", &cameraPosition, 1);
+    wallsShader->setUniform<float>("u_cameraPosition", &cameraPosition, 1);
+
     return true;
 }
 
@@ -130,9 +140,9 @@ Bloc* Game::newRandomBloc() {
     // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp)
     switch (rand() % 4) {
         case 0: return new BasicBloc(ROWS, COLUMNS);
-        case 1: return new BasicBloc(ROWS, COLUMNS);
-        case 2: return new BasicBloc(ROWS, COLUMNS);
-        case 3: return new BasicBloc(ROWS, COLUMNS);
+        case 1: return new LBloc(ROWS, COLUMNS);
+        case 2: return new ZBloc(ROWS, COLUMNS);
+        case 3: return new TBloc(ROWS, COLUMNS);
     }
 }
 

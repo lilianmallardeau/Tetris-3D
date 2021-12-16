@@ -7,6 +7,9 @@
 
 struct Position {
     unsigned int x, y, z;
+    Position operator+(const Position& pos) const {
+        return {x+pos.x, y+pos.y, z+pos.z};
+    }
 };
 
 class Bloc {

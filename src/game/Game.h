@@ -20,6 +20,8 @@ class Game {
         Bloc *activeBloc{};
 
         // OpenGL stuff
+        glm::vec3 cameraPosition{};
+        glm::vec3 lightPosition{1.0f, -1.0f, ROWS-1};
         glm::mat4 viewMatrix{}, projectionMatrix{};
         glm::mat4 viewProjMatrix{};
 
