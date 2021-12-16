@@ -42,7 +42,12 @@ bool NavigationGrid::isSliceFull(unsigned int slice) const {
 }
 
 void NavigationGrid::removeSlice(unsigned int slice) {
-    // TODO removeSlice
+    for (uint i = slice; i > 0; --i) {
+        grid[i] = grid[i - 1];
+        slicesColors[i] = slicesColors[i-1];
+    }
+    grid[0] = std::vector(nCols, std::vector(nRows, false));
+    slicesColors[0] = Color::random();
 }
 
 void NavigationGrid::removeFullSlices() {
